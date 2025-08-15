@@ -14,7 +14,31 @@ dependencies = [
     "pydantic (>=2.11.7,<3.0.0)"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "black (>=24.0.0,<25.0.0)"
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+# Настройки Black
+[tool.black]
+line-length = 88
+target-version = ['py313']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
