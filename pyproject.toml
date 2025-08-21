@@ -1,26 +1,23 @@
-[project]
+[tool.poetry]
 name = "trackmind"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Yoda",email = "yoda@example.com"}
-]
+authors = ["Yoda <yoda@example.com>"]
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = [
-    "fastapi (>=0.116.1,<0.117.0)",
-    "sqlalchemy (>=2.0.43,<3.0.0)",
-    "uvicorn (>=0.35.0,<0.36.0)",
-    "pydantic (>=2.11.7,<3.0.0)"
-]
+packages = [{include = "app"}]
 
-[project.optional-dependencies]
-dev = [
-    "black (>=24.0.0,<25.0.0)"
-]
+[tool.poetry.dependencies]
+python = "^3.13"
+fastapi = "^0.116.1"
+sqlalchemy = "^2.0.43"
+uvicorn = "^0.35.0"
+pydantic = "^2.11.7"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.0.0"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 # Настройки Black
