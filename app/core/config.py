@@ -7,13 +7,13 @@ import os
 from functools import lru_cache
 
 from pydantic import (
-    BaseSettings,
     Field,
     field_validator,
     PostgresDsn,
     RedisDsn,
     AnyHttpUrl,
 )
+from pydantic_settings import BaseSettings
 from pydantic.types import SecretStr
 
 
@@ -22,7 +22,7 @@ class DatabaseSettings(BaseSettings):
 
     # PostgreSQL
     postgres_host: str = Field(default="localhost", env="POSTGRES_HOST")
-    postrgres_port: int = Field(default=5432, env="POSTGRES_PORT")
+    postgres_port: int = Field(default=5432, env="POSTGRES_PORT")
     postgres_user: str = Field(default="postgres", env="POSTGRES_USER")
     postgres_password: SecretStr = Field(
         default=SecretStr("12345678"), env="POSTGRES_PASSWORD"
@@ -40,7 +40,7 @@ class DatabaseSettings(BaseSettings):
         )
 
     class Config:
-        emv_prefix = "DB_"
+        env_prefix = "DB_"
 
 
 class Settings(BaseSettings):
@@ -50,17 +50,34 @@ class Settings(BaseSettings):
     environment: str = Field(default="development", env="ENVIRONMENT")
     debug: bool = Field(default=True, env="DEBUG")
 
+    # Логирование
+    log_level: str = Field(default="INFO", env="LOG_LEVEL")
+    log_file: str = Field(default="logs/trackmind.log", env="LOG_FILE")
+    log_format: str = Field(
+        default="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        env="LOG_FORMAT"
+    )
+
     # Поднастройки
     database: DatabaseSettings = DatabaseSettings()
 
-    @field_validator("enviroment")
+    @field_validator("environment")
     @classmethod
-    def validate_environment(cls, v):
+    def validate_environment(cls, v: str) -> str:
         """Валидация окружения"""
         allowed = ["development", "staging", "production", "testing"]
         if v not in allowed:
             raise ValueError(f"Invalid environment: {v}. Allowed values are: {allowed}")
         return v
+
+    @field_validator("log_level")
+    @classmethod
+    def validate_log_level(cls, v: str) -> str:
+        """Валидация уровня логирования"""
+        allowed = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        if v.upper() not in allowed:
+            raise ValueError(f"Invalid log_level: {v}. Allowed values are: {allowed}")
+        return v.upper()
 
     @property
     def is_development(self) -> bool:
